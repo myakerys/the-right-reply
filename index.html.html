@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Right Reply: an A2 dialogue game</title>
+<style>
+:root{--bg:#eef3fb;--card:#ffffff;--ink:#17223b;--mute:#4a5670;--tom:#2f6fed;--tomi:#ffffff;--anna:#ffc83d;--annai:#17223b;--ok:#0b6b3a;--okbg:#ddf5e7;--bad:#9c1c14;--badbg:#fde6e3;--line:#c9d3e6;--focus:#d6336c;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1524;--card:#18203a;--ink:#eef2fb;--mute:#aab5d0;--tom:#6b9bff;--tomi:#0f1524;--anna:#ffc83d;--annai:#17223b;--ok:#7ee0a6;--okbg:#12362a;--bad:#ffb4ab;--badbg:#44211f;--line:#34406a;--focus:#ff8fb6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1524;--card:#18203a;--ink:#eef2fb;--mute:#aab5d0;--tom:#6b9bff;--tomi:#0f1524;--anna:#ffc83d;--annai:#17223b;--ok:#7ee0a6;--okbg:#12362a;--bad:#ffb4ab;--badbg:#44211f;--line:#34406a;--focus:#ff8fb6;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 Verdana,"Trebuchet MS",Tahoma,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.25rem;margin:0 0 8px}
+p{margin:0 0 12px}
+.sub{color:var(--mute);margin-bottom:18px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+nav button{flex:1 1 140px}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:10px 14px;min-height:46px;text-align:left}
+button:hover{border-color:var(--tom)}
+button:focus-visible,select:focus-visible{outline:4px solid var(--focus);outline-offset:2px}
+nav button[aria-current="true"]{background:var(--tom);color:var(--tomi);border-color:var(--tom);font-weight:bold}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+.goal{border-left:6px solid var(--anna);padding-left:12px;color:var(--mute);margin-bottom:14px}
+.bub{display:block;max-width:88%;padding:10px 16px;border-radius:22px;margin:8px 0;font-weight:bold}
+.bub.t{background:var(--tom);color:var(--tomi);border-bottom-left-radius:4px}
+.bub.a{background:var(--anna);color:var(--annai);border-bottom-right-radius:4px;margin-left:auto}
+.who{display:block;font-size:.8rem;font-weight:normal;opacity:.85}
+.opts{display:grid;gap:10px;margin-top:12px}
+.opts button.ok,.gap.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.opts button.no,.gap.no{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.fb{min-height:3.2em;margin-top:12px;font-weight:bold}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.act{background:var(--tom);color:var(--tomi);border-color:var(--tom);font-weight:bold;text-align:center}
+.act:hover{filter:brightness(1.1)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--tom);width:0;transition:width .3s}
+.gap{width:100%;min-height:46px;border:2px dashed var(--line);border-radius:14px;padding:8px;background:var(--card);margin-bottom:6px}
+.list{margin:0 0 14px;padding-left:0;list-style:none}
+.list li{padding:6px 0;border-bottom:1px solid var(--line)}
+.mask{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--ink);text-align:center}
+.mask.show{border-bottom-color:transparent}
+.chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:4px 12px;margin:3px}
+.say{margin-left:8px;padding:2px 10px;min-height:34px;font-size:.85rem;border-radius:999px}
+.big{font-size:2.2rem;font-weight:bold;min-width:2ch;text-align:center}
+.hide{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>The Right Reply</h1>
+<p class="sub">Read, match, speak. Practise short conversations in English with Tom and Anna.</p>
+<nav aria-label="Game stages">
+<button data-s="0">1. Match the reply</button>
+<button data-s="1">2. Complete the chat</button>
+<button data-s="2">3. Disappearing chat</button>
+<button data-s="3">4. Now you do it!</button>
+</nav>
+
+<!-- Stage 1 -->
+<section id="s0" class="card" aria-labelledby="h0">
+<h2 id="h0">1. Match the reply</h2>
+<p class="goal">Goal: choose a reply that fits the question or the statement.</p>
+<div class="bar" role="presentation"><i id="bar0"></i></div>
+<div id="q0"></div>
+</section>
+
+<!-- Stage 2 -->
+<section id="s1" class="card hide" aria-labelledby="h1">
+<h2 id="h1">2. Complete the chat</h2>
+<p class="goal">Goal: read the whole conversation for gist and detail. Anna has six gaps, but there are eight replies. Two replies do not fit.</p>
+<p><strong>Anna’s replies</strong></p>
+<ul class="list" id="rep"></ul>
+<div id="gaps"></div>
+<div class="row"><button class="act" id="chk">Check my answers</button><button id="rst">Start again</button></div>
+<p class="fb" id="fb1" role="status" aria-live="polite"></p>
+</section>
+
+<!-- Stage 3 -->
+<section id="s2" class="card hide" aria-labelledby="h2">
+<h2 id="h2">3. Disappearing chat</h2>
+<p class="goal">Goal: speak with good intonation. Read your lines aloud with a partner. In each round, more words disappear.</p>
+<div class="row" role="group" aria-label="Choose your role">
+<button id="rT" aria-pressed="true">I am Tom</button><button id="rA" aria-pressed="false">I am Anna</button>
+</div>
+<div class="row" role="group" aria-label="Choose a round" id="rounds"></div>
+<label class="row"><input type="checkbox" id="peek"> Show the hidden words</label>
+<div id="dlg" aria-live="polite"></div>
+<p class="sub">Tip: your voice goes up at the end of a yes/no question. Press “Listen” to hear a line. Your device reads it aloud.</p>
+</section>
+
+<!-- Stage 4 -->
+<section id="s3" class="card hide" aria-labelledby="h3">
+<h2 id="h3">4. Now you do it!</h2>
+<p class="goal">Goal: use questions and replies in real speaking. Work in pairs and tell your partner what you did yesterday.</p>
+<p>Find things you both did. The pair with the most similarities wins.</p>
+<ul class="list">
+<li><span class="chip">Did you … yesterday?</span> <span class="chip">Yes, I did. / No, I didn’t.</span></li>
+<li><span class="chip">What did you …?</span> <span class="chip">I … (past simple)</span></li>
+<li><span class="chip">Where did you go?</span> <span class="chip">I went to …</span></li>
+<li><span class="chip">I watched TV.</span> <span class="chip">So did I! / Me too!</span></li>
+</ul>
+<p><strong>Things we both did:</strong></p>
+<div class="row"><button class="act" id="mn" aria-label="Remove one similarity">−</button><span class="big" id="cnt" aria-live="polite">0</span><button class="act" id="pl" aria-label="Add one similarity">+</button></div>
+<p class="fb" id="win" role="status" aria-live="polite"></p>
+</section>
+</main>
+
+<script>
+var $=function(id){return document.getElementById(id)};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e}
+
+/* ---------- navigation ---------- */
+var navB=document.querySelectorAll("nav button");
+function show(n){
+  for(var i=0;i<4;i++){$("s"+i).classList.toggle("hide",i!==n);navB[i].setAttribute("aria-current",i===n?"true":"false")}
+  window.scrollTo(0,0);
+}
+navB.forEach(function(b){b.onclick=function(){show(+b.dataset.s)}});
+
+/* ---------- stage 1 ---------- */
+var Q=[
+ {q:"Did you watch TV last night?",o:["Yes, I did.","Yes, I do.","Yes, I have."],a:0,w:"The question starts with “Did”, so the answer uses “did”: Yes, I did."},
+ {q:"Do you live near the school?",o:["No, I didn’t.","No, I don’t.","No, I haven’t."],a:1,w:"The question starts with “Do”, so the answer uses “do”: No, I don’t."},
+ {q:"Where did you go yesterday?",o:["Yes, I did.","I went to the market.","I am at home."],a:1,w:"“Where” asks about a place. Do not answer with Yes or No. Use the past simple: I went to …"},
+ {q:"Have you finished your lunch?",o:["Yes, I did.","Yes, I do.","Yes, I have."],a:2,w:"The question starts with “Have”, so the answer uses “have”: Yes, I have."},
+ {q:"Could you open the window, please?",o:["Sure, no problem.","At the window.","Yes, it is."],a:0,w:"This is a polite request. We answer with an offer to help: Sure, no problem."},
+ {q:"I love pizza!",o:["So did I!","Yes, I am.","So do I!"],a:2,w:"“Love” is present simple, so we agree with “So do I!”"}
+];
+var qi=0,sc=0,done=false;
+function drawQ(){
+  var box=$("q0");box.textContent="";
+  $("bar0").style.width=(qi/Q.length*100)+"%";
+  if(qi>=Q.length){
+    box.appendChild(el("p","",""));
+    var h=el("p","fb ok","Well done! Your score: "+sc+" out of "+Q.length+".");box.appendChild(h);
+    var r=el("div","row");var b=el("button","act","Play stage 2");b.onclick=function(){show(1)};
+    var r2=el("button","","Play stage 1 again");r2.onclick=function(){qi=0;sc=0;drawQ()};
+    r.appendChild(b);r.appendChild(r2);box.appendChild(r);return;
+  }
+  done=false;
+  var it=Q[qi];
+  box.appendChild(el("p","","Question "+(qi+1)+" of "+Q.length));
+  var s=el("span","bub t");s.appendChild(el("span","who","Tom says"));s.appendChild(document.createTextNode(it.q));box.appendChild(s);
+  box.appendChild(el("p","","Choose Anna’s reply:"));
+  var o=el("div","opts");o.setAttribute("role","group");o.setAttribute("aria-label","Reply choices");
+  var fb=el("p","fb");fb.setAttribute("role","status");fb.setAttribute("aria-live","polite");
+  it.o.forEach(function(t,i){
+    var b=el("button","",t);
+    b.onclick=function(){
+      if(done)return;done=true;
+      var bs=o.querySelectorAll("button");
+      bs[it.a].classList.add("ok");
+      if(i===it.a){sc++;fb.className="fb ok";fb.textContent="Correct! "+it.w}
+      else{b.classList.add("no");fb.className="fb no";fb.textContent="Not this one. "+it.w}
+      var n=el("button","act",qi===Q.length-1?"See my score":"Next question");
+      n.onclick=function(){qi++;drawQ()};box.appendChild(n);n.focus();
+    };
+    o.appendChild(b);
+  });
+  box.appendChild(o);box.appendChild(fb);
+}
+drawQ();
+
+/* ---------- stage 2 ---------- */
+var R={A:"Did you? What was it called?",B:"No, I don’t. It’s far from here.",C:"Hello Tom, I had a lot of homework so I stayed at home.",D:"A few. I hope you’ll like them.",E:"I went to the park yesterday.",F:"So do I! It’s boring.",G:"No. It was very long but I finished most of it.",H:"This evening? OK! I could show you my new bike then too!"};
+var G=[
+ {t:"Hello Anna. Why weren’t you at the club yesterday?",a:"C",h:"“Why” asks for a reason."},
+ {t:"Was it difficult? Did you finish it all?",a:"G",h:"“Did you …?” needs a Yes or No answer with a little more detail."},
+ {t:"I hate homework.",a:"F",h:"Tom says what he feels. Anna feels the same, so she agrees."},
+ {t:"At the club, we played a new game.",a:"A",h:"Tom tells news. Anna shows interest with a short question."},
+ {t:"I can come to your house after the club if you like.",a:"H",h:"Tom makes an offer. Anna accepts it."},
+ {t:"Have you got any snacks?",a:"D",h:"“Any snacks” asks about a quantity."}
+];
+var rep=$("rep");
+Object.keys(R).forEach(function(k){var li=el("li","");li.appendChild(el("strong","",k+". "));li.appendChild(document.createTextNode(R[k]));rep.appendChild(li)});
+var gp=$("gaps"),sels=[];
+G.forEach(function(g,i){
+  var w=el("div","");
+  var s=el("span","bub t");s.appendChild(el("span","who","Tom"));s.appendChild(document.createTextNode(g.t));w.appendChild(s);
+  var lab=el("label","who","Anna’s reply "+(i+1)+":");lab.setAttribute("for","sel"+i);lab.style.cssText="display:block;text-align:right;font-size:.85rem";w.appendChild(lab);
+  var sel=el("select","gap");sel.id="sel"+i;
+  var d=el("option","","Choose a reply");d.value="";sel.appendChild(d);
+  Object.keys(R).forEach(function(k){var o=el("option","",k+". "+R[k]);o.value=k;sel.appendChild(o)});
+  sel.onchange=function(){sel.className="gap"};
+  sels.push(sel);w.appendChild(sel);gp.appendChild(w);
+});
+$("chk").onclick=function(){
+  var n=0,hint="";
+  G.forEach(function(g,i){
+    var v=sels[i].value;
+    if(v===g.a){sels[i].className="gap ok";n++}
+    else{sels[i].className="gap no";if(!hint)hint=" Hint for reply "+(i+1)+": "+g.h}
+  });
+  var f=$("fb1");
+  if(n===6){f.className="fb ok";f.textContent="Perfect! 6 out of 6. Replies B and E did not fit."}
+  else{f.className="fb no";f.textContent=n+" out of 6 are correct."+hint}
+};
+$("rst").onclick=function(){sels.forEach(function(s){s.value="";s.className="gap"});$("fb1").textContent="";$("fb1").className="fb"};
+
+/* ---------- stage 3 ---------- */
+var D=[["T","Hello Anna. Why weren’t you at the club yesterday?"],["A","Hello Tom, I had a lot of homework so I stayed at home."],["T","Was it difficult? Did you finish it all?"],["A","No. It was very long but I finished most of it."],["T","I hate homework."],["A","So do I! It’s boring."],["T","At the club, we played a new game."],["A","Did you? What was it called?"],["T","I can come to your house after the club if you like."],["A","This evening? OK! I could show you my new bike then too!"],["T","Have you got any snacks?"],["A","A few. I hope you’ll like them."]];
+var role="T",round=1,names={T:"Tom",A:"Anna"};
+var RN=["Round 1: read it all","Round 2: some words gone","Round 3: many words gone","Round 4: almost all gone"];
+function hidden(i){return round===2?i%3===2:round===3?i%2===1:round===4?i>0:false}
+function say(t){try{var u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function drawD(){
+  var box=$("dlg");box.textContent="";
+  var peek=$("peek").checked;
+  D.forEach(function(l){
+    var mine=l[0]===role;
+    var s=el("span","bub "+(l[0]==="T"?"t":"a"));
+    s.appendChild(el("span","who",names[l[0]]+(mine?" (you)":"")));
+    var words=l[1].split(" ");
+    words.forEach(function(w,i){
+      var m=/^(\W*)(.*?)(\W*)$/.exec(w);
+      if(mine&&hidden(i)){
+        s.appendChild(document.createTextNode(m[1]));
+        var k=el("span","mask"+(peek?" show":""),m[2]);
+        if(!peek){k.style.color="transparent"}
+        s.appendChild(k);s.appendChild(document.createTextNode(m[3]+" "));
+      }else s.appendChild(document.createTextNode(w+" "));
+    });
+    var b=el("button","say","Listen");b.setAttribute("aria-label","Listen to this line");b.onclick=function(){say(l[1])};
+    s.appendChild(b);box.appendChild(s);
+  });
+}
+var rd=$("rounds");
+RN.forEach(function(t,i){var b=el("button","",t);b.setAttribute("aria-pressed",i===0?"true":"false");b.onclick=function(){round=i+1;rd.querySelectorAll("button").forEach(function(x,j){x.setAttribute("aria-pressed",j===i?"true":"false")});drawD()};rd.appendChild(b)});
+function setRole(r){role=r;$("rT").setAttribute("aria-pressed",r==="T");$("rA").setAttribute("aria-pressed",r==="A");drawD()}
+$("rT").onclick=function(){setRole("T")};$("rA").onclick=function(){setRole("A")};
+$("peek").onchange=drawD;
+drawD();
+
+/* ---------- stage 4 ---------- */
+var c=0;
+function upd(){$("cnt").textContent=c;$("win").textContent=c>=5?"Great! You found "+c+" things. You can shout: I’m the winner!":""}
+$("pl").onclick=function(){c++;upd()};$("mn").onclick=function(){if(c>0)c--;upd()};
+
+show(0);
+</script>
+</body>
+</html>
